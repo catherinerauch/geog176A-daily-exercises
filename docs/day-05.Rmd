@@ -71,7 +71,7 @@ state_df <- covid %>%
   summarise(ncases = sum(cases), .groups = 'drop') %>%
   arrange(desc(date), desc(ncases)) %>%
   head(5)
-state_df
+state_df$state
 ```
 
 ## Question 3: 

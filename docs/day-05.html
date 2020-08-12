@@ -413,11 +413,11 @@ county_df</code></pre>
 <pre><code>## # A tibble: 5 x 6
 ##   date       county        state      fips   cases deaths
 ##   &lt;date&gt;     &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 2020-08-09 New York City New York   &lt;NA&gt;  232517  23580
-## 2 2020-08-09 Los Angeles   California 06037 208528   4977
-## 3 2020-08-09 Miami-Dade    Florida    12086 132460   1865
-## 4 2020-08-09 Maricopa      Arizona    04013 126053   2353
-## 5 2020-08-09 Cook          Illinois   17031 111447   4928</code></pre>
+## 1 2020-08-10 New York City New York   &lt;NA&gt;  232756  23586
+## 2 2020-08-10 Los Angeles   California 06037 210424   4996
+## 3 2020-08-10 Miami-Dade    Florida    12086 133622   1874
+## 4 2020-08-10 Maricopa      Arizona    04013 126371   2356
+## 5 2020-08-10 Cook          Illinois   17031 111948   4928</code></pre>
 </div>
 <div id="question-2" class="section level2">
 <h2>Question 2:</h2>
@@ -428,15 +428,8 @@ county_df</code></pre>
   summarise(ncases = sum(cases), .groups = &#39;drop&#39;) %&gt;%
   arrange(desc(date), desc(ncases)) %&gt;%
   head(5)
-state_df</code></pre>
-<pre><code>## # A tibble: 5 x 3
-##   state      date       ncases
-##   &lt;chr&gt;      &lt;date&gt;      &lt;dbl&gt;
-## 1 California 2020-08-09 563244
-## 2 Florida    2020-08-09 532798
-## 3 Texas      2020-08-09 508190
-## 4 New York   2020-08-09 425568
-## 5 Georgia    2020-08-09 200147</code></pre>
+state_df$state</code></pre>
+<pre><code>## [1] &quot;California&quot; &quot;Florida&quot;    &quot;Texas&quot;      &quot;New York&quot;   &quot;Georgia&quot;</code></pre>
 </div>
 <div id="question-3" class="section level2">
 <h2>Question 3:</h2>
@@ -451,11 +444,11 @@ state_df</code></pre>
 <pre><code>## # A tibble: 5 x 7
 ##   date       county       state    fips  cases deaths ratio
 ##   &lt;date&gt;     &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-## 1 2020-08-09 Throckmorton Texas    48447     4      2  50  
-## 2 2020-08-09 Perkins      Nebraska 31135    18      7  38.9
-## 3 2020-08-09 Waldo        Maine    23027    62     14  22.6
-## 4 2020-08-09 Morton       Kansas   20129     9      2  22.2
-## 5 2020-08-09 Sweet Grass  Montana  30097     5      1  20</code></pre>
+## 1 2020-08-10 Throckmorton Texas    48447     4      2  50  
+## 2 2020-08-10 Perkins      Nebraska 31135    18      7  38.9
+## 3 2020-08-10 Waldo        Maine    23027    62     14  22.6
+## 4 2020-08-10 Morton       Kansas   20129     9      2  22.2
+## 5 2020-08-10 Sweet Grass  Montana  30097     5      1  20</code></pre>
 </div>
 <div id="question-4" class="section level2">
 <h2>Question 4:</h2>
@@ -470,11 +463,11 @@ state_df</code></pre>
 <pre><code>## # A tibble: 5 x 5
 ##   state         date       ncases ndeaths ratio
 ##   &lt;chr&gt;         &lt;date&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-## 1 Connecticut   2020-08-09  50320    4441  8.83
-## 2 New Jersey    2020-08-09 186626   15874  8.51
-## 3 New York      2020-08-09 425568   32354  7.60
-## 4 Massachusetts 2020-08-09 121040    8735  7.22
-## 5 Michigan      2020-08-09  96835    6520  6.73</code></pre>
+## 1 Connecticut   2020-08-10  50567    4444  8.79
+## 2 New Jersey    2020-08-10 186884   15878  8.50
+## 3 New York      2020-08-10 426046   32361  7.60
+## 4 Massachusetts 2020-08-10 121315    8741  7.21
+## 5 Michigan      2020-08-10  97472    6527  6.70</code></pre>
 </div>
 <div id="end" class="section level1">
 <h1>END</h1>
