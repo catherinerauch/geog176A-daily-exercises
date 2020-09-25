@@ -1,0 +1,63 @@
+---
+title: "Day 21"
+author: "Catherine Rauch"
+date: "9/10/2020"
+output: html_document
+---
+
+
+
+```{r Importing Libraries, include=FALSE}
+
+install.packages("whitebox", repos="http://R-Forge.R-project.org")
+
+library(tidyverse)
+library(stars)
+library(sf)
+library(raster)
+library(elevatr)
+library(raster)
+library(whitebox)
+
+```
+
+```{r part 1, message=FALSE}
+
+mo <- AOI::aoi_get("Mount Saint Helens") %>% 
+  AOI::aoi_buffer(.5)
+
+```
+
+```{r part2, eval=FALSE}
+
+ele <- elevatr::get_elev_raster(mo, z = 12) %>% 
+  crop(mo)
+
+writeRaster(ele, filename =  "data/moelevation.tif", overwrite=T)
+
+
+wbt_hillshade("data/moelevation.tif", "data/mohill.tif")
+
+wbt_slope("data/moelevation.tif", "data/moslope.tif")
+
+wbt_aspect("data/moelevation.tif", "data/moaspect.tif")
+
+```
+
+```{r part3, eval=TRUE}
+
+evelationraster <-  raster("data/moelevation.tif")
+plot(evelationraster, main = "Elevation", box = FALSE, axes = FALSE, col = viridis::viridis(256))
+
+hillshaderaster <- raster("data/mohill.tif")
+plot(hillshaderaster, main = "Hillshade", box = FALSE, axes = FALSE, col = gray.colors(256, alpha = .8))
+
+sloperaster <- raster("data/moslope.tif")
+plot(sloperaster, main = "Slope", box = FALSE, axes = FALSE, col = terrain.colors(256))
+
+aspectraster <- raster("data/moaspect.tif")
+plot(aspectraster, main = "Aspect", box = FALSE, axes = FALSE, col = rainbow(8))
+
+
+
+```

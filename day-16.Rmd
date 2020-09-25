@@ -1,0 +1,44 @@
+---
+title: "Daily Assignment 16"
+author: "Catherine Rauch"
+date: "8/29/2020"
+output: html_document
+---
+
+```{r setup, message=FALSE}
+library(leaflet)
+library(sf)
+library(tidyverse)
+library(USAboundaries)
+```
+
+```{r die, warning=FALSE, message=FALSE}
+
+circutdata = read_csv('~/github/geog176A-daily-exercises/circuits.csv') %>% 
+  st_as_sf(coords = c("lng", "lat"), crs = 4326) 
+
+worlddata <- 
+leaflet(data = circutdata) %>%
+  addProviderTiles(providers$CartoDB) %>% 
+  addMarkers(data = circutdata, label = ~circuitRef)
+
+uscircuitdata <- circutdata %>% 
+  filter(country == "USA")
+
+pal <- colorFactor(palette = "RdBu", domain = c(us_cities()$state_name, us_cities()$city) )
+
+pop = paste0('<a href=', uscircuitdata$url, '>', uscircuitdata$name, "</a>")
+
+conus = filter(us_states(), !stusps %in% c("AK", "PR", "HI"))
+
+leaflet(data = uscircuitdata) %>% addProviderTiles(providers$CartoDB) %>%
+  addPolygons(data = st_combine(conus), fillColor = "transparent",
+              color = "black", weight = 1) %>% 
+  addCircleMarkers(color = ~pal(location), popup = pop, label = uscircuitdata$location, fillOpacity = .9, 
+                   stroke = FALSE) %>% 
+  addMeasure() %>% 
+  addMiniMap() %>% 
+  addControl("US Formula 1 Circuit Locations", position = "bottomleft")
+
+```
+ 

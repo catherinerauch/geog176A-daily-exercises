@@ -1,0 +1,115 @@
+---
+title: "Day 17 and 18"
+author: "Catherine Rauch"
+date: "8/31/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(rgdal)
+library(sf)
+library(tidyverse)
+library(raster)
+library(osmdata)
+library(leaflet)
+
+
+```
+
+
+```{r pressure, warning=FALSE, message=FALSE}
+
+# read uscities.csv data into R, make it a sf object, and filter to Goleta
+goletadata <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
+  st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
+  filter(city == "Goleta") %>% 
+  # transform to CRS:5070 and create a 5 km buffer
+  st_transform(5070) %>% 
+  st_buffer(5000) %>%
+  # get bounding box of buffer and make bbox object a sfc and then sf object
+  st_bbox() %>% 
+  st_as_sfc() %>% 
+  st_as_sf()
+
+
+
+# crop elevation object to bounding box
+elevationobj <- elevatr::get_elev_raster(goletadata, z = 12) %>% 
+                raster::crop(goletadata)
+ 
+raster::writeRaster(elevationobj, filename = "goleta-elev.tif", overwrite = TRUE)
+
+
+# plot raster and describe properties
+plot(raster::raster("goleta-elev.tif"))
+raster::raster("goleta-elev.tif")
+
+```
+
+```{r part 2}
+
+elevationraster <- raster("goleta-elev.tif")
+
+# use calc to threshold raster: values > 0 = 1 and values < or = to 0 are = to NA
+
+threshold <- function(x) {
+                          ifelse(x <= 0 , NA, 1)
+                          }
+
+thresholdraster <- calc(elevationraster, threshold)
+
+
+
+# multiply that raster by original elevation data to isolate the land cells
+
+landraster = thresholdraster * elevationraster
+
+# reclassify the raster into 6 classes with breaks at even 100m intervals (think of these as topo lines)
+
+reclassifiedraster <- reclassify(landraster, data.frame(min = seq(0,500,100),
+                                                        max =  seq(100,600, 100), lab = c(0:5)), lowerTRUE = TRUE)
+
+# stack the three rasters
+
+goletarasters <- stack(thresholdraster, landraster, reclassifiedraster) 
+  
+
+# use setNames() to change the names of the layers
+
+goletarasters <- setNames(goletarasters,c("Mask", "Elevation", "Topography"))
+
+
+
+# plot the stack using the viridis::viridis color palette
+
+plot(goletarasters, col = viridis::viridis(300))
+
+
+```
+
+```{r day 3}
+
+bounded <- st_bbox(goletarasters) %>% st_as_sfc() %>% st_transform(4326)
+
+osm <-  osmdata::opq(bounded) %>% 
+    add_osm_feature(key = 'amenity', value = "restaurant") %>%
+    osmdata_sf()
+
+# extract all OSM point data for restaurants, keep only those that have a name in the name attribute
+resturant <-  osm$osm_points %>% 
+    filter(is.na(name) == FALSE)
+
+# extract the elevation of these restaurants from your elevation raster
+elevation <- raster::extract(elevationraster, resturant)
+
+# add this information as a new column to the OSM points
+resturant <- resturant %>% 
+  mutate(elev = elevation)
+
+# Create a leaflet map to show these locations as Markers
+leaflet(data = resturant) %>%
+  addProviderTiles(providers$CartoDB) %>% 
+  addMarkers(popup = as.character(resturant$elev), label = ~name)
+
+```

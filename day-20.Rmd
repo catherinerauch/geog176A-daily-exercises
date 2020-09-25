@@ -1,0 +1,46 @@
+---
+title: "day-20"
+author: "Catherine Rauch"
+date: "9/7/2020"
+output: html_document
+---
+
+
+```{r cars, warning=FALSE, message=FALSE}
+library(climateR)
+library(sf)
+library(tidyverse)
+library(USAboundaries)
+library(raster)
+
+
+params <-  c("prcp", "tmax", "tmin")
+
+AOI <- USAboundaries::us_states() %>%
+  filter(state_name == "Washington")
+
+WA <- climateR::getTerraClim(AOI, params, startDate = "2015-11-01")  %>% 
+  stack() %>% 
+  setNames(params)
+
+values <- values(WA)
+
+IDX <- which(!is.na(values))
+
+v <- na.omit(values)
+vs <- scale(v)
+
+kmeans8 <- kmeans(vs, 8, iter.max = 100)
+
+clusterraster <- WA$tmax
+values(clusterraster) <- NA
+clusterraster[IDX] <- kmeans8$cluster
+plot(clusterraster, col = RColorBrewer::brewer.pal(8, "YlGnBu"))
+
+
+
+
+
+
+```
+

@@ -1,0 +1,67 @@
+---
+title: "day-13"
+author: "Catherine Rauch"
+date: "8/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r packages, message=FALSE, }
+library("sf")
+library("tidyverse")
+
+#install.packages("rmapshaper")
+
+library("rmapshaper")
+```
+
+
+
+```{r stuff,out.width="30%",out.height="25%"}
+
+# Get the CONUS state borders from USABoudaries::us_states
+CONUS <- USAboundaries::us_states(resolution = "low") %>%
+  filter(!state_name %in% c( "Puerto Rico", "Alaska","Hawaii"))
+
+
+# play with st_simplify and ms_simplify
+conus <- CONUS %>% 
+  st_combine() %>% 
+  st_transform(5070)
+
+# find the dTolorance and the keep parameters you feel maintain a desired shape and topology
+
+plot(st_simplify(conus, preserveTopology = TRUE, dTolerance = 50000))
+plot(st_simplify(conus, preserveTopology = TRUE, dTolerance = 10000)) ####
+plot(st_simplify(conus, preserveTopology = TRUE,  dTolerance = 100000)) 
+
+
+plot(ms_simplify(conus, keep = .05))
+plot(ms_simplify(conus, keep = .1))
+plot(ms_simplify(conus, keep = .07)) ####
+plot(ms_simplify(conus, keep = .0001))
+
+
+
+
+```
+```{r Q3}
+
+# create a map for the raw, and each simplified geometry and report the number of points in each
+plot(conus)
+mapview::npts(conus)
+
+
+plot(ms_simplify(conus, keep = .07))
+mapview::npts(ms_simplify(conus, keep = .07))
+
+plot(st_simplify(conus, preserveTopology = TRUE, dTolerance = 10000))
+mapview::npts(st_simplify(conus, preserveTopology = TRUE, dTolerance = 10000))
+
+
+```
